@@ -11,7 +11,7 @@ BulkCert is a high-performance, asynchronous backend service and sleek web inter
 
 ## ✨ Features
 
-- **Sleek Web Interface:** A premium, dark-themed, Vercel-inspired frontend for easy administration.
+
 - **Bulk Processing:** Submit hundreds of recipients in a single request.
 - **Atomic Concurrency:** Safe for serverless environments. Uses row-level locking to prevent duplicate processing.
 - **Failure Isolation:** One invalid email or unsupported name character will fail *only* that specific certificate, allowing the rest of the batch to succeed.
