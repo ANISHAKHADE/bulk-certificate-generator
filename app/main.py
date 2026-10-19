@@ -1,20 +1,18 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.exceptions import RequestValidationError
-from contextlib import asynccontextmanager
 from pathlib import Path
 from app.db import init_db
 from app.api.jobs import router as jobs_router
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    try:
-        init_db()
-    except Exception as e:
-        print(f"DB Init Error: {e}")
-    yield
+# FIX: Force DB initialization immediately when Vercel loads the file
+try:
+    init_db()
+    print("Database tables verified/created successfully.")
+except Exception as e:
+    print(f"CRITICAL DB ERROR: {e}")
 
-app = FastAPI(title="Bulk Certificate Generator", lifespan=lifespan)
+app = FastAPI(title="Bulk Certificate Generator")
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -25,7 +23,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 app.include_router(jobs_router)
 
-# Serve the Frontend HTML at the root URL
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def serve_frontend():
     html_path = Path(__file__).parent / "frontend" / "index.html"
